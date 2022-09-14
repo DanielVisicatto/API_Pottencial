@@ -1,16 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PaymentAPI.src.Persistence;
 using PaymentAPI.src.Models;
 
 namespace PaymentAPI.src.Persistence
 {
-    public class DatabaseContext : DbContext
+    public class VendaContext : DbContext
     {
-        public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
+        public VendaContext(DbContextOptions<VendaContext> options) : base(options)
         {
-            
+
         }
 
-        public DbSet<Venda> Vendas{ get; set; }
+        public DbSet<Venda> Vendas { get; set; }
         public DbSet<Vendedor> Vendedores { get; set; }
         public DbSet<Produto> Produtos { get; set; }
 
@@ -22,15 +23,15 @@ namespace PaymentAPI.src.Persistence
                 e.HasMany(p => p.Produtos).WithOne().HasForeignKey(p => p.Id);
             });
 
-            builder.Entity<Vendedor>(e =>   
+            builder.Entity<Vendedor>(e =>
             {
                 e.HasKey(e => e.Id);
-                e.HasMany(v => v.Vendas).WithOne().HasForeignKey(p => p.Produtos);
+                e.HasMany(v => v.Vendas).WithOne().HasForeignKey(p => p.IdPedido);
             });
 
             builder.Entity<Produto>(e =>
             {
-                e.HasKey(e => e.Id);                
+                e.HasKey(e => e.Id);
             });
         }
     }

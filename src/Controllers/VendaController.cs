@@ -11,9 +11,9 @@ namespace PaymentAPI.src.Controllers
     [ApiController]
     public class VendaController : ControllerBase
     {
-        private DatabaseContext _context { get; set; }
+        private VendaContext _context { get; set; }
 
-        public VendaController(DatabaseContext context)
+        public VendaController(VendaContext context)
         {
             _context = context;
         }

@@ -1,7 +1,10 @@
-﻿namespace PaymentAPI.src.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace PaymentAPI.src.Models
 {
     public class Venda
     {
+        [Required]
         public string NomeVendedor { get; set; }
         public DateTime Data { get; set; }
         public int IdPedido { get; set; }

@@ -20,6 +20,7 @@ namespace PaymentAPI.src.Persistence
             builder.Entity<Venda>(e =>
             {
                 e.HasKey(e => e.IdPedido);
+                e.Property(e => e.IdPedido).ValueGeneratedOnAdd();
                 e.HasMany(p => p.Produtos).WithOne().HasForeignKey(p => p.Id);
             });
 

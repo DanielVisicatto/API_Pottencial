@@ -42,22 +42,91 @@ namespace PaymentAPI.src.Controllers
                 return BadRequest();
             }
 
-            return Created("Cadastrada", venda);
+            return Created("Cadastrada", StatusCode(201));
         }       
 
         [HttpPut("{id}")]
-        public ActionResult Update([FromRoute]int id, [FromBody]Venda venda)
+        public ActionResult<Venda> Update([FromRoute]int id, [FromBody]Venda venda)
         {
             _context.Vendas.Update(venda);
             _context.SaveChanges();
 
-            return Ok($"Dados da Venda {id} atualizado com sucesso!");
+            return Accepted($"Dados da Venda {id} atualizado com sucesso!", StatusCode(202));
+        }        
+
+        [HttpPatch("{WaitingToApproved}")]
+        public ActionResult<Venda> UpdateWaitingToApproved([FromRoute]int id, [FromBody]Venda venda)
+        {
+            var vendaBanco = _context.Vendas.Find(EnumStatusVenda.AguardandoPagamento);
+            if (vendaBanco.Status == EnumStatusVenda.AguardandoPagamento)
+            {
+                vendaBanco.Status = EnumStatusVenda.PagamentoAprovado;
+                _context.Vendas.Update(venda);
+                _context.SaveChanges();
+                return Accepted($"Status da Venda {id} atualizado com sucesso!", StatusCode(202));
+            }                
+            else
+                return Unauthorized(StatusCode(401));
         }
 
-        [HttpPatch("{id}")]
-        public ActionResult UpdateStatus(int id)
+        [HttpPatch("{WaitingToCanceled}")]
+        public ActionResult<Venda> UpdateWaitingToCanceled([FromRoute] int id, [FromBody] Venda venda)
         {
-            return Ok($"Status da Venda {id} atualizado com sucesso!");
+            var vendaBanco = _context.Vendas.Find(EnumStatusVenda.AguardandoPagamento);
+            if (vendaBanco.Status == EnumStatusVenda.AguardandoPagamento)
+            {
+                vendaBanco.Status = EnumStatusVenda.Cancelada;
+                _context.Vendas.Update(venda);
+                _context.SaveChanges();
+                return Accepted($"Status da Venda {id} atualizado com sucesso!", StatusCode(202));
+            }
+            else
+                return Unauthorized(StatusCode(401));
+        }
+
+        [HttpPatch("{ApprovedToInTransport}")]
+        public ActionResult<Venda> UpdateApprovedToInTransport([FromRoute] int id, [FromBody] Venda venda)
+        {
+            var vendaBanco = _context.Vendas.Find(EnumStatusVenda.PagamentoAprovado);
+            if (vendaBanco.Status == EnumStatusVenda.PagamentoAprovado)
+            {
+                vendaBanco.Status = EnumStatusVenda.EnviadoParaTransportadora;
+                _context.Vendas.Update(venda);
+                _context.SaveChanges();
+                return Accepted($"Status da Venda {id} atualizado com sucesso!", StatusCode(202));
+            }
+            else
+                return Unauthorized(StatusCode(401));
+        }
+
+        [HttpPatch("{ApprovedToCancelled}")]
+        public ActionResult<Venda> UpdateApprovedToCancelled([FromRoute] int id, [FromBody] Venda venda)
+        {
+            var vendaBanco = _context.Vendas.Find(EnumStatusVenda.PagamentoAprovado);
+            if (vendaBanco.Status == EnumStatusVenda.PagamentoAprovado)
+            {
+                vendaBanco.Status = EnumStatusVenda.Cancelada;
+                _context.Vendas.Update(venda);
+                _context.SaveChanges();
+                return Accepted($"Status da Venda {id} atualizado com sucesso!", StatusCode(202));
+            }
+            else
+                return Unauthorized(StatusCode(401));
+        }
+
+        [HttpPatch("{InTransportToDelivered}")]
+        public ActionResult<Venda> UpdateInTransportToDelivered([FromRoute] int id, [FromBody] Venda venda)
+        {
+            var vendaBanco = _context.Vendas.Find(EnumStatusVenda.EnviadoParaTransportadora);
+            if (vendaBanco.Status == EnumStatusVenda.EnviadoParaTransportadora)
+            {
+                vendaBanco.Status = EnumStatusVenda.Entregue;
+                _context.Vendas.Update(venda);
+                _context.SaveChanges();
+                return Accepted($"Status da Venda {id} atualizado com sucesso!", StatusCode(202));
+            }
+            else
+                return Unauthorized(StatusCode(401));
         }
 
         [HttpDelete("{id}")]
